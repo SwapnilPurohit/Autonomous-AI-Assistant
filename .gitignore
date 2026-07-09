@@ -1,0 +1,13 @@
+# API Keys and Secrets
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Memory and Goals Data
+memory.json
+goals.json
+plan.json
