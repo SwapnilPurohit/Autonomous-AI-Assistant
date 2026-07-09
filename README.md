@@ -1,27 +1,52 @@
-# Autonomous AI Planner Agent
+# Autonomous AI Planner Agent: A Journey
 
-An advanced, state-driven autonomous AI agent built in Python using the Groq API (Llama 3.1) and Playwright. 
+This repository tracks the complete evolution of an Autonomous AI Agent built from scratch during the **Cognition Loop SOC '26 Program**. 
 
-Unlike standard stateless chatbots, this agent features **persistent memory**, **live web scraping tools**, and a **crash-resilient orchestration engine** that decomposes massive goals into steps, tracks its state on disk, and autonomously corrects its own reasoning errors.
+What starts as a simple API call script progressively evolves week-by-week into a highly advanced, resilient, state-driven autonomous orchestrator with live web-scraping tools and persistent memory.
 
-## 🚀 Key Features
+## 🚀 The Capstone Project
 
-### 1. State-Driven Orchestrator (`capstone.py`)
-The crown jewel of this repository. When given a complex goal, the agent:
+If you just want to see the final results of the program, look at the final two files:
+
+### 1. The State-Driven Orchestrator (`capstone.py`)
+The crown jewel of this repository. When given a massive, complex goal, the agent:
 * **Decomposes the goal** into an actionable step-by-step plan and saves it to a `plan.json` state machine.
-* **Executes steps sequentially** using a ReAct (Reason + Act) loop.
+* **Executes steps sequentially** using a ReAct (Reason + Act) loop combined with Playwright web-scraping tools to find information on Wikipedia.
 * **Survives Crashes & Rate Limits**: Because the exact state of execution is saved to disk after every step, you can physically force-quit the script (or hit an API rate limit), and upon restarting, the agent will instantly resume from the exact step it left off.
 * **Context Aggregation**: Dynamically builds a condensed context window of all previously completed steps before executing the next one, completely eliminating "LLM amnesia" without blowing up the token limit.
 
-### 2. Persistent Memory & Identity (`my_assistant.py`)
+### 2. The Persistent Memory Assistant (`my_assistant.py`)
 A conversational interface featuring long-term memory.
 * **Identity Tracking**: Autonomously calls a `remember` tool to extract facts about the user and saves them to a `memory.json` database.
 * **Quest/Goal Board**: Allows the user to add and complete tasks. The agent tracks these in a `goals.json` file across sessions.
 * **Time-Aware**: Reads the local system clock to dynamically greet the user based on the time of day.
 
-### 3. Tool Execution
-* Integrated with **Playwright** for headless browser automation.
-* Specifically configured to scrape and extract text from Wikipedia, allowing the agent to bypass CAPTCHAs, avoid API keys, and quickly retrieve highly reliable factual data to solve its goals.
+---
+
+## 📚 The Learning Journey (File by File)
+
+This repository was built layer by layer. Here is what every file in this project does, in chronological order:
+
+### Part 1: The Voice (Basic LLM Interactions)
+* **`basic_call.py`**: The absolute simplest script to send a prompt to the Groq API and get a text response.
+* **`persona_call.py`**: Introducing the `system` prompt to force the LLM to adopt a specific personality and behavioral rules.
+* **`json_extractor.py`**: Teaching the LLM to output structured data (JSON) instead of plain text, allowing Python to programmatically parse the AI's thoughts.
+
+### Part 2: The Hands (Tools and Automation)
+* **`basic_tool.py`**: The first time the LLM is given "tools". The LLM returns a JSON object requesting to use a tool, and Python executes a local function on its behalf.
+* **`browser_test.py`**: An introduction to Playwright, opening a headless browser to pull HTML from a live website.
+* **`youtube_autoplay.py`**: An advanced Playwright automation script that opens YouTube, searches for a query, and automatically clicks the first video.
+* **`research_agent.py`**: Combining the LLM with Playwright. The LLM is given a `search_the_web` tool and can autonomously research facts online.
+
+### Part 3: The Brain (Autonomy and Reasoning)
+* **`chat_agent.py`**: Introduction of the continuous "while" loop. The agent can now have a back-and-forth conversation with the user, and can autonomously decide *whether* it needs to use a tool or just talk directly to the user.
+* **`rate_limit_handler.py`**: A defensive engineering script testing an exponential backoff algorithm to prevent the program from crashing when the API throws HTTP 429 Rate Limit errors.
+
+### Part 4: The Self (Memory and Orchestration)
+* **`my_assistant.py`**: Connecting the `chat_agent` loop to the local file system so it can read and write `memory.json` and `goals.json`, giving the agent a persistent identity across reboots.
+* **`capstone.py`**: The final integration of everything above. The chat loop is replaced by a State-Machine Orchestrator that plans, executes, saves state to `plan.json`, handles rate limits, and uses web-scraping tools.
+
+---
 
 ## 🛠️ Setup & Installation
 
@@ -44,24 +69,7 @@ Create a `.env` file in the root directory and add your Groq API key:
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-## 💻 Usage
-
-To test the **State-Driven Orchestrator** (Recommended):
+To run any file, simply execute it with Python, for example:
 ```bash
 python capstone.py
 ```
-*Try giving it a multi-step goal like: "Find the birthdates of Elon Musk and Mark Zuckerberg, and tell me who is older."*
-
-To test the **Persistent Memory Chatbot**:
-```bash
-python my_assistant.py
-```
-
-## 🏗️ Architecture Note
-This project was developed in stages, representing the evolution of an AI:
-- **Voice**: Structured JSON outputs and Persona prompting.
-- **Hands**: Equipping the LLM with Python functions (Playwright).
-- **Brain**: The ReAct continuous execution loop.
-- **Self**: Disk-based memory and state orchestration.
-
-*Developed as a Capstone Project for the Cognition Loop SOC '26 Program.*
